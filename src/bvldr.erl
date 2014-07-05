@@ -1,7 +1,7 @@
 -module(bvldr).
 -behaviour(gen_server).
 
--export([start_link/0, create/0]).
+-export([start_link/0, create/0, list/0]).
 
 %% gen_server callbacks
 -export([init/1,
@@ -18,11 +18,14 @@ start_link() ->
 create() ->
     gen_server:call(?MODULE, create_container).
 
+list() ->
+    gen_server:call(?MODULE, list_containers).
+
 %% Server functions
 init([]) -> {ok, []}.
 
 handle_call(create_container, _From, State) ->
-    {ok, _Response} = docker_container:create([
+    {ok, Response} = docker_container:create([
      {'Hostname', <<"">>},
      {'User', <<"">>},
      {'Memory', 0},
@@ -42,7 +45,10 @@ handle_call(create_container, _From, State) ->
      {'WorkingDir', <<"">>},
      {'Cmd', ["/bin/bash -c 'while true; do echo Hello world; sleep 1; done'"]}
     ]),
-    {ok, State};
+    {reply, Response, State};
+
+handle_call(list_containers; _From, State) ->
+    {reply, [], State};
 
 handle_call(terminate, _From, State) ->
     {stop, normal, ok, State}.
