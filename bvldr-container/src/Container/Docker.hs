@@ -2,11 +2,9 @@
 module Container.Docker
   ( create ) where
 
+import Container.Docker.Types (Image, Command, ContainerID)
+
 import Data.Text (Text)
 
-type Image = Text
-type Command = Text
-type ContainerID = Text
-
 create :: Image -> Command -> IO (Maybe ContainerID)
-create i c = do
+create i c = return $ Just "hello"

@@ -24,5 +24,6 @@ executable bvldr-container
                      , lens >= 4.2
                      , containers >= 0.5
                      , aeson >= 0.7
+                     , text >= 0.11
   hs-source-dirs:      src
   default-language:    Haskell2010
