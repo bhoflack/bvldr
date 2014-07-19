@@ -9,8 +9,8 @@ import Data.Aeson (object, ToJSON (..), Value (..), (.=))
 import Data.Map (Map)
 import Data.Text (Text)
 
-type Image = Text
-type Command = Text
+type Image       = Text
+type Command     = Text
 type ContainerID = Text
 
 data CreateContainerReq = 
@@ -56,3 +56,18 @@ instance ToJSON CreateContainerReq where
            , "disableNetwork"        .= (req ^. disableNetwork)
            , "exposedPorts"          .= (req ^. exposedPorts)
            ]
+
+
+class DockerContext a where
+  
+  -- | The baseurl of the docker server.
+  baseurl :: a -> String
+
+data DefaultDockerContext = DefaultDockerContext {
+    _baseurl              :: String
+  }
+  deriving (Show)
+
+instance DockerContext DefaultDockerContext where
+  baseurl = _baseurl
+  
