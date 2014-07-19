@@ -5,15 +5,18 @@ import Container.Docker.Types
 import Control.Lens
 
 import qualified Data.Text.IO as T
+import System.Environment (getArgs)
 
 main :: IO ()
 main = do
-  mid <- create ctx defaultContainerRequest
+  [baseuri] <- getArgs
+
+  let ctx = DefaultDockerContext baseuri
+      req = defaultContainerRequest & cmd .~ ["sleep", "5"]
+  
+  mid <- create ctx req
   case mid of
     Just id -> T.putStrLn id
     _       -> T.putStrLn "Error creating a container"
 
-  where
 
-  ctx = DefaultDockerContext "http://localhost:1234"
-  req = defaultContainerRequest & cmd .~ ["sleep", "5"]
