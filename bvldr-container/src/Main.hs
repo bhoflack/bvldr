@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
-import Container.Docker (create, defaultContainerRequest)
+import Container.Docker (create, list, defaultContainerRequest)
 import Container.Docker.Types
+import Container.Docker.Types.CreateContainerReq
 
 import Control.Lens
 
@@ -16,7 +17,10 @@ main = do
   
   mid <- create ctx req
   case mid of
-    Just id -> T.putStrLn id
+    Just id -> do
+      T.putStrLn id
+      mContainers <- list ctx
+      putStrLn (show mContainers)
     _       -> T.putStrLn "Error creating a container"
 
 
