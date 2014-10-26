@@ -17,8 +17,15 @@ data Message =
   | RemoveBuildNode NodeID
   | Ping
   | Pong
-  | AddCustomer CustomerID
+  | AddCustomer { customerId    :: CustomerID
+                , privateKey    :: Text
+                }
   | RemoveCustomer CustomerID
-  | AddCommitRef CommitID
-  | BuildGitCommit CommitID
+  | AddCommitRef { commitId     :: CommitID
+                 , cloneURL     :: Text
+                 }
+  | BuildGitCommit { commitId   :: CommitID
+                   , cloneURL   :: Text
+                   , privateKey :: Text
+                   }
   deriving (Show, Eq)

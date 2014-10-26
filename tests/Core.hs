@@ -34,8 +34,8 @@ addNode = do
   assertEqual "The server should have the node appended" ([Command "test 123" Ping], expectedServer) r
   where
   msg = AddBuildNode "test 123"
-  initialServer = Server [] [] []
-  expectedServer = Server [InitialNode "test 123"] [] []
+  initialServer = Server [] [] [] []
+  expectedServer = Server [InitialNode "test 123"] [] [] []
 
 removeNode :: Assertion
 removeNode = do
@@ -43,40 +43,43 @@ removeNode = do
   assertEqual "The server should have the node removed" ([], expectedServer) r
   where
   msg = RemoveBuildNode "abc123"
-  initialServer = Server [AvailableNode "abc456", BusyNode "abc123" Ping] [] []
-  expectedServer = Server [AvailableNode "abc456"] [] []
+  initialServer = Server [AvailableNode "abc456", BusyNode "abc123" Ping] [] [] []
+  expectedServer = Server [AvailableNode "abc456"] [] [] []
 
 addCustomer :: Assertion
 addCustomer = do
   let (_, s) = runState (run msg) initialServer
-  assertEqual "The server should keep track of the new customer" [Customer "abc"] (s^.customers)
+  assertEqual "The server should keep track of the new customer" [Customer "abc" "key"] (s^.customers)
   where
-  msg = AddCustomer "abc"
-  initialServer = Server [] [] []
+  msg = AddCustomer "abc" "key"
+  initialServer = Server [] [] [] []
 
 removeCustomer :: Assertion
 removeCustomer = do
   let (_, s) = runState (run msg) initialServer
-  assertEqual "The server should remove the customer" [Customer "def"] (s^.customers)
+  assertEqual "The server should remove the customer" [Customer "def" "key"] (s^.customers)
   where
   msg = RemoveCustomer "abc"
-  initialServer = Server [] [Customer "abc", Customer "def"] []
+  initialServer = Server [] [] [Customer "abc" "key", Customer "def" "key"] []
 
 queueCommitRef :: Assertion
 queueCommitRef = do
   let r = runState (run msg) initialServer
   assertEqual "The server should queue the commits when no build node is available" ([], expectedServer) r
   where
-  msg = AddCommitRef "b3123"
-  initialServer = Server [] [] []
-  expectedServer = Server [] [] [AddCommitRef "b3123"]
+  msg = AddCommitRef "b3123" "cloneurl"
+  initialServer = Server [] [] [] []
+  expectedServer = Server [] [] [] [msg]
 
 forwardCommitRef :: Assertion
 forwardCommitRef = do
   let r = runState (run msg) initialServer
   assertEqual "The server forwards a commit ref to an available node" ([Command "abc123" buildMsg], expectedServer) r
   where
-  msg = AddCommitRef "b3123"
-  buildMsg = BuildGitCommit "b3123"
-  initialServer = Server [AvailableNode "abc123"] [Customer "abc"] []
-  expectedServer = Server [BusyNode "abc123" buildMsg] [Customer "abc"] []
+  cloneUrl = "git@github.com:foo/bar.git"
+  msg = AddCommitRef "b3123" cloneUrl
+  privateKey = "pkey"
+  buildMsg = BuildGitCommit "b3123" cloneUrl privateKey
+  customer = Customer "abc" privateKey
+  initialServer = Server [AvailableNode "abc123"] [Repository cloneUrl customer]  [customer] []
+  expectedServer = Server [BusyNode "abc123" buildMsg] [Repository cloneUrl customer] [customer] []
