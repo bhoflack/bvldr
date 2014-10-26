@@ -7,7 +7,7 @@ import Control.Monad.State (State (..), modify, get, put)
 
 data Node = InitialNode { _nodeId :: NodeID }
           | AvailableNode { _nodeId :: NodeID }
-          | BusyNode { _nodeId :: NodeID }
+          | BusyNode { _nodeId :: NodeID, _command :: Message }
   deriving (Show, Eq)
 
 data Customer = Customer { _customerId :: CustomerID }
@@ -52,9 +52,9 @@ run m@(AddCommitRef r) = do
          return []
     else do
          let n = head availableNodes
-             bn = BusyNode (n^.nodeId)
-             ns' = filter (\n -> n^.nodeId /= n^.nodeId) ns
              cm = BuildGitCommit r
+             bn = BusyNode (n^.nodeId) cm
+             ns' = filter (\n -> n^.nodeId /= n^.nodeId) ns
          modify (set nodes $ bn : ns')
          return [Command (bn^.nodeId) cm]
 

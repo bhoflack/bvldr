@@ -43,7 +43,7 @@ removeNode = do
   assertEqual "The server should have the node removed" ([], expectedServer) r
   where
   msg = RemoveBuildNode "abc123"
-  initialServer = Server [AvailableNode "abc456", BusyNode "abc123"] [] []
+  initialServer = Server [AvailableNode "abc456", BusyNode "abc123" Ping] [] []
   expectedServer = Server [AvailableNode "abc456"] [] []
 
 addCustomer :: Assertion
@@ -79,4 +79,4 @@ forwardCommitRef = do
   msg = AddCommitRef "b3123"
   buildMsg = BuildGitCommit "b3123"
   initialServer = Server [AvailableNode "abc123"] [Customer "abc"] []
-  expectedServer = Server [BusyNode "abc123"] [Customer "abc"] []
+  expectedServer = Server [BusyNode "abc123" buildMsg] [Customer "abc"] []
