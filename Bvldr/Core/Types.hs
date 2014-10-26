@@ -35,11 +35,26 @@ data GithubEvent = PushEvent
   , _deleted    :: Bool
   , _forced     :: Bool
   , _commits    :: [Commit]
+  , _pusher     :: Pusher
+  , _repository :: Repository
+  } deriving (Show, Eq)
+
+data Pusher = Pusher
+  { _pusherName         :: Text
+  , _pusherEmail        :: Text
+  } deriving (Show, Eq)
+
+data Repository = Repository
+  { _gitUrl     :: Text
+  , _sshUrl     :: Text
+  , _cloneUrl   :: Text
   } deriving (Show, Eq)
 
 makeLenses ''User
 makeLenses ''Commit
 makeLenses ''GithubEvent
+makeLenses ''Pusher
+makeLenses ''Repository
 
 instance FromJSON User where
   parseJSON (Object v) = User <$>
@@ -71,6 +86,21 @@ instance FromJSON GithubEvent where
                                    v .: "created" <*>
                                    v .: "deleted" <*>
                                    v .: "forced" <*>
-                                   v .: "commits"
+                                   v .: "commits" <*>
+                                   v .: "pusher" <*>
+                                   v .: "repository"
 
+  parseJSON _ = mzero
+
+instance FromJSON Pusher where
+  parseJSON (Object v) = Pusher <$>
+                                v .: "name" <*>
+                                v .: "email"
+  parseJSON _ = mzero
+
+instance FromJSON Repository where
+  parseJSON (Object v) = Repository <$> 
+                                   v .: "git_url" <*>
+                                   v .: "ssh_url" <*>
+                                   v .: "clone_url"
   parseJSON _ = mzero

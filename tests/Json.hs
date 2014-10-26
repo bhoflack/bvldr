@@ -3,7 +3,7 @@ module Json where
 
 import Bvldr.Core.Types
 
-import Data.Aeson (decode)
+import Data.Aeson (eitherDecode)
 
 import System.IO (IOMode (..), withFile)
 
@@ -23,13 +23,17 @@ tests = [
 decodePushEvent :: Assertion
 decodePushEvent = withFile "push.json" ReadMode $ \h -> do
   js <- BSL8.hGetContents h
-  let mev = decode js :: Maybe GithubEvent
-  assertEqual "" mev (Just $ PushEvent "refs/heads/master"
+  let mev = eitherDecode js :: Either String GithubEvent
+  assertEqual "" mev (Right $ PushEvent "refs/heads/master"
                                        "393f74b7cc35846dafea38266f5bbbd13f174b3a"
                                        "15681f752384bd3444250b4fc3c450db9ca69990" False False True 
-                                       [Commit "15681f752384bd3444250b4fc3c450db9ca69990"
+                                       [Commit "709e0adcca6bba8f64bebaed5de43a0a66ae483f"
                                                True "Use query param to override storage cookie"
                                                "https://github.com/foo/bar/commit/15681f752384bd3444250b4fc3c450db9ca69990"
                                                (User "Tim Schaub" "tim.schaub@example.com" "tschaub")
                                                (User "Tim Schaub" "tim.schaub@example.com" "tschaub")
-                                               [] [] ["src/common/loader.js"]])
+                                               [] [] ["src/common/loader.js"]]
+                                       (Pusher "tschaub" "tschaub@users.noreply.github.com")
+                                       (Repository "git://github.com/foo/bar.git"
+                                                   "git@github.com:bhoflack/calculator.git"
+                                                   "https://github.com/foo/bar.git"))

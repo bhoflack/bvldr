@@ -8,7 +8,7 @@
 "compare": "https://github.com/foo/bar/compare/393f74b7cc35...15681f752384",
 "commits": [
 {
-"id": "15681f752384bd3444250b4fc3c450db9ca69990",
+"id": "709e0adcca6bba8f64bebaed5de43a0a66ae483f",
 "distinct": true,
 "message": "Use query param to override storage cookie",
 "timestamp": "2014-07-31T13:27:02-06:00",
@@ -104,7 +104,7 @@
 "updated_at": "2014-07-21T19:57:34Z",
 "pushed_at": 1406834831,
 "git_url": "git://github.com/foo/bar.git",
-"ssh_url": "git@github.com:foo/bar.git",
+"ssh_url": "git@github.com:bhoflack/calculator.git",
 "clone_url": "https://github.com/foo/bar.git",
 "svn_url": "https://github.com/foo/bar",
 "homepage": "https://example.com/foo/bar",
